@@ -1,7 +1,7 @@
 var Hapi = require('hapi');
 var Good = require('good');
 var gulp = require('gulp');
-
+var _ = require('lodash');
 
 
 
@@ -22,22 +22,39 @@ var getPath = function(path,handler){
 
 }
 
+var areas = function(id){
 
-var helloWorld = function (request, reply) {
-    reply('Hello, world!');
+  var areas_name = ["air_conditioner", "bath_tub", "wall_paint", "stove", "bath_cubicle", "curtains", "window", "door", "flooring", "water_heater", "piping", "wash_basin", "drain", "toilet_bowl", "tap", "alarm_systems", "cable_line", "phone_line", "fume_cupboard", "fan", "power_outlets", "lighting", "others"]
+  var areas = [];
+  for(i = 0 ;i < areas_name.length; i ++){
+    areas.push({id: i, name : areas_name[i]});
   }
 
-var helloWorldWithParams = function (request, reply) {
-    reply('Hello1, ' + encodeURIComponent(request.params.name) + '!');
+  if(_.isEmpty(id)){
+    return areas
+  }else{
+    console.log(id)
+
+    return _.find(areas,{'id' : parseInt(id)})
+  }
+
+
+
+}
+
+
+var getAreas = function (request, reply) {
+    reply(areas());
+  }
+
+var getAreasWithParams = function (request, reply) {
+    reply(areas(encodeURIComponent(request.params.id)));
 }
 
 
 
-getPath("/",helloWorld);
-getPath("/{name}",helloWorldWithParams);
-
-
-
+getPath("/areas",getAreas);
+getPath("/areas/{id}",getAreasWithParams);
 
 
 
