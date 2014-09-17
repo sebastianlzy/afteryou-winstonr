@@ -31,12 +31,41 @@ var format_template_array = function(templates){
   return formatted_templates
 }
 
+var format_issue_tarray = function(templates){
+
+  var formatted_templates = [];
+  for(i = 0 ;i < templates.length; i ++){
+    formatted_templates.push({id: i, name : templates[i],status : 'damaged'});
+  }
+  formatted_templates.push({id : templates.length ,name : 'dirty' , status : 'dirty'})
+  return formatted_templates
+}
+
 var format_return_value = function(values_array,id){
   if(_.isEmpty(id) || id === 'undefined'){
     return values_array
   }else{
     return _.find(values_array,{'id' : parseInt(id)})
   }
+}
+
+
+var rooms = function(id){
+  var rooms_name = [ "bathroom","bedroom", "living_room","kitchen"];
+  var rooms = format_template_array(rooms_name);
+  return format_return_value(rooms,id)
+}
+
+var roomWithAreas = function(name){
+  var roomsWithAreas =
+  {
+    bathroom : format_template_array(["lighting", "tap", "toilet_bowl", "drain", "wash_basin", "piping", "water_heater", "bath_tub", "flooring", "door", "bath_cubicle", "wall_paint"]),
+    bedroom : format_template_array(["air_conditioner", "wall_paint", "curtains", "window", "door", "flooring", "fan", "power_outlets", "lighting"]),
+    living_room : format_template_array(["air_conditioner", "wall_paint", "curtains", "window", "flooring", "fan", "power_outlets", "lighting"]),
+    kitchen : format_template_array(["lighting", "power_outlets", "fume_cupboard", "tap", "wash_basin", "flooring", "door", "window", "stove", "wall_paint"])
+  }
+  return roomsWithAreas[name];
+
 }
 
 var areas = function(id){
@@ -47,27 +76,44 @@ var areas = function(id){
 
 }
 
-
-var rooms = function(id){
-  var rooms_name = ["bedroom", "living_room", "bathroom", "kitchen"];
-  var rooms = format_template_array(rooms_name);
-  return format_return_value(rooms,id)
-}
-
-var roomWithParams = function(name){
-  var roomsWithAreas =
+var areaWithIssues = function(name){
+  var areaWithIssues =
   {
-    bathroom : ["lighting", "tap", "toilet_bowl", "drain", "wash_basin", "piping", "water_heater", "bath_tub", "flooring", "door", "bath_cubicle", "wall_paint"],
-    bedroom : ["air_conditioner", "wall_paint", "curtains", "window", "door", "flooring", "fan", "power_outlets", "lighting"],
-    living_room : ["air_conditioner", "wall_paint", "curtains", "window", "flooring", "fan", "power_outlets", "lighting"],
-    kitchen : ["lighting", "power_outlets", "fume_cupboard", "tap", "wash_basin", "flooring", "door", "window", "stove", "wall_paint"]
+    air_conditioner : format_issue_tarray(['air_not_cold',"leaking"]),
+    bath_tub : format_issue_tarray(["chipped","leaking"]),
+    wall_paint : format_issue_tarray(["chipped"]),
+    stove : format_issue_tarray(["gas_leakage"]),
+    bath_cubicle : format_issue_tarray(["cracks","faulty_door"]),
+    curtains : format_issue_tarray(["faulty_sliding_mechanism","faulty_close_open_mechanism"]),
+    'window' : format_issue_tarray(["faulty_sliding_mechanism","faulty_hinge"]),
+    flooring : format_issue_tarray(["faulty_hinge","faulty_sliding_mechanism","chipped"]),
+    water_heater : format_issue_tarray(["high_pitched_whining"]),
+    piping : format_issue_tarray(["clogged"]),
+    wash_basin : format_issue_tarray(["clogged"]),
+    toilet_bowl : format_issue_tarray(["clogged"]),
+    tap : format_issue_tarray(["clogged"]),
+    alarm_systems : format_issue_tarray(["failure_to_detect"]),
+    cable_line : format_issue_tarray(["no_internet_connection"]),
+    phone_line : format_issue_tarray(["no_phone_connection"]),
+    fume_cupboard : format_issue_tarray(["unable_to_turn_on"]),
+    fan : format_issue_tarray(["unable_to_turn_on"]),
+    power_outlets : format_issue_tarray(["unable_to_turn_on"]),
+    lighting : format_issue_tarray(["unable_to_turn_on"]),
+    others : format_issue_tarray(["others"])
+
+
   }
-  return roomsWithAreas[name];
+  return areaWithIssues[name];
 
 }
 
 var getAreas = function (request, reply) {
     reply(areas(encodeURIComponent(request.params.id)));
+}
+
+var getAreaWithIssues = function (request, reply) {
+    var area = areas(encodeURIComponent(request.params.id));
+    reply(areaWithIssues(area.name));
 }
 
 var getRooms = function (request, reply) {
@@ -76,12 +122,13 @@ var getRooms = function (request, reply) {
 
 var getRoomWithAreas = function (request, reply) {
     var room = rooms(encodeURIComponent(request.params.id));
-    reply(roomWithParams(room.name));
+    reply(roomWithAreas(room.name));
 }
 
 
 
 getPath("/areas/{id?}",getAreas);
+getPath("/areas/{id}/issues",getAreaWithIssues);
 getPath("/rooms/{id?}",getRooms);
 getPath("/rooms/{id}/areas",getRoomWithAreas);
 
