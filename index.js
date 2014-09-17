@@ -107,6 +107,12 @@ var areaWithIssues = function(name){
 
 }
 
+var services = function(id){
+  var services_name = ["spring_cleaning","tidying","shinning"];
+  var services = format_template_array(services_name);
+  return format_return_value(services,id)
+}
+
 var getAreas = function (request, reply) {
     reply(areas(encodeURIComponent(request.params.id)));
 }
@@ -125,12 +131,17 @@ var getRoomWithAreas = function (request, reply) {
     reply(roomWithAreas(room.name));
 }
 
+var getServices = function (request, reply) {
+    reply(services(encodeURIComponent(request.params.id)));
+}
+
 
 
 getPath("/areas/{id?}",getAreas);
 getPath("/areas/{id}/issues",getAreaWithIssues);
 getPath("/rooms/{id?}",getRooms);
 getPath("/rooms/{id}/areas",getRoomWithAreas);
+getPath("/services/{id?}",getServices);
 
 
 
