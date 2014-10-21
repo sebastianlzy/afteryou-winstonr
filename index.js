@@ -38,7 +38,24 @@ var service_reports = [
     },
     "request_submitted_date": "15/10/2014",
     "sent_to_agent": false
-}];
+},
+
+{
+    "id": 132,
+    "number_of_submission": 0,
+    "latest": false,
+    "address": {
+        "name": "Rivervale",
+        "block_number": "142",
+        "street_name": "Jurong West Central 1",
+        "unit_number": "12-345",
+        "postal_code": 650142
+    },
+    "request_submitted_date": "15/10/2014",
+    "sent_to_agent": true
+}
+
+];
 
 
 var service_report_134 = {
@@ -2015,6 +2032,7 @@ var listing = function(id){
     ]};
 
   return listings
+
 }
 
 var getAreas = function (request, reply) {
@@ -2259,9 +2277,77 @@ var service_report_133 = {
     "service_start_changeable": true
 }
 
-
+var service_report_135 = {
+    "listing_id": 380,
+    "service_by_date": "01/12/2014",
+    "service_report_generated_date": "16/10/2014",
+    "request_generated_date": "15/10/2014",
+    "service_manager": null,
+    "address": {
+        "name": "Rivervale",
+        "block_number": "142",
+        "street_name": "Bukit Batok",
+        "unit_number": "12-03",
+        "postal_code": 650142
+    },
+    "area_services": [
+        {
+            "room": {
+                "id": 591,
+                "template_room": 5,
+                "name": "Living Room 1",
+                "description": ""
+            },
+            "area": {
+                "id": 9,
+                "name": "Chandelier"
+            },
+            "issue": {
+                "template_issue": {
+                    "id": 41,
+                    "template_area": 9,
+                    "name": "Damaged",
+                    "status": "damaged",
+                    "quotation_required": true,
+                    "additional_instructions": "1. Take Photo <br/> 2. Type of lightbulb <br/> 3. Voltage of lightbulb <br/>"
+                },
+                "id": 969,
+                "remarks": "",
+                "client_image_id": "1413345118531"
+            },
+            "solution": {
+                "id": 48,
+                "name": "remove rusted section on chandeller"
+            },
+            "id": 969,
+            "service_report": 135,
+            "unit_price": "40.00",
+            "unit": "",
+            "quantity": 1,
+            "remarks": "",
+            "user_changeable": false,
+            "selected": false,
+            "selected_datetime": null,
+            "user_data_remarks": "",
+            "requires_quotation": false,
+            "service_provider_selected": false
+        }
+    ],
+    "house_services": [],
+    "service_start_date": null,
+    "id": 135,
+    "type": "quick_request",
+    "sent_to_agent": false,
+    "remarks": "",
+    "additional_request_data": "{\"service_manager\":{\"required\":false,\"appointment\":{\"date\":\"10/16/2014\",\"time\":\"0800-1000\"}}}",
+    "service_start_time": "",
+    "service_start_changeable": true
+};
 
   switch(+id){
+
+      case 135 :
+        reply(service_report_135);
 
       case 134 :
         if (reply_service_report === 134){
@@ -2276,6 +2362,10 @@ var service_report_133 = {
       case 133 :
         reply(service_report_133);
 
+        break;
+
+      case 132 :
+        reply(service_report_134);
         break;
 
   }
@@ -2350,7 +2440,7 @@ var postRequest = function(request,reply){
 
     setTimeout(function(){
 
-    var service_report = _.find(service_reports,{id:134});
+    var service_report = _.find(service_reports,{id:134}) || _.find(service_reports,{id:132});;
       service_report.latest = true;
       service_report.sent_to_agent = true;
 
@@ -2385,16 +2475,28 @@ var putServiceReport = function(request,reply){
 
   if(+id === 134){
 
-    var service_report = _.find(service_reports,{id:134});
+    var service_report = _.find(service_reports,{id:134}) || _.find(service_reports,{id:132});
+
+    console.log(service_report)
     service_report.latest = false;
 
     service_report_134 = request.payload;
     var area_services = _.filter(service_report_134.area_services,{selected:true});
-    _.each(area_services,function(area_service){area_service.user_changeable = false});
-    console.log("============== Area Services =================")
-    console.log(prettyjson.render(area_services));
+    _.each(area_services,function(area_service){
+      area_service.user_changeable = false
+      area_service.selected_datetime = new Date();
+      });
+
+
+    var house_services = _.filter(service_report_134.house_services,{selected:true});
+    _.each(house_services,function(house_service){
+      house_service.user_changeable = false;
+
+      house_service.selected_datetime = new Date();
+    });
 
   }
+
 
 
 
@@ -2462,7 +2564,7 @@ postPath("/agent_app/request/image",postImage);
 postPath("/agent_app/notification_token",postToken);
 postPath("/agent_app/feedback",postFeedback);
 postPath("/change_password",postChangePassword);
-postPath("/agent_app/service_report/mail",postSRmail);
+postPath("/agent_app/service_report/send_mail",postSRmail);
 
 postPath("/agent_app/debug",postDebug);
 
