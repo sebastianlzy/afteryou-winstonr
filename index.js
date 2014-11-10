@@ -10,8 +10,6 @@ var prettyjson = require('prettyjson');
 
 
 
-
-
 var server = Hapi.createServer('0.0.0.0', 3000,
 {
   json: {space:2},
@@ -25,35 +23,37 @@ var server = Hapi.createServer('0.0.0.0', 3000,
 var service_reports = [
 
 
-{
-    "id": 133,
-    "number_of_submission": 0,
-    "latest": false,
-    "address": {
-        "name": "Rivervale",
-        "block_number": "142",
-        "street_name": "Bukit Batok",
-        "unit_number": "12-03",
-        "postal_code": 650142
-    },
-    "request_submitted_date": "15/10/2014",
-    "sent_to_agent": false
-},
+// {
+//     "id": 133,
+//     "number_of_submission": 0,
+//     "latest": false,
+//     "address": {
+//         "name": "Parc Oasis",
+//         "block_number": "142",
+//         "street_name": "Bukit Batok",
+//         "unit_number": "12-03",
+//         "postal_code": 650142
+//     },
+//     "request_submitted_date": "15/10/2014",
+//     "sent_to_agent": false,
+//     "new_admin_message": false
+// },
 
-{
-    "id": 132,
-    "number_of_submission": 0,
-    "latest": false,
-    "address": {
-        "name": "Rivervale",
-        "block_number": "142",
-        "street_name": "Jurong West Central 1",
-        "unit_number": "12-345",
-        "postal_code": 650142
-    },
-    "request_submitted_date": "15/10/2014",
-    "sent_to_agent": true
-}
+// {
+//     "id": 132,
+//     "number_of_submission": 0,
+//     "latest": false,
+//     "address": {
+//         "name": "Parc Oasis",
+//         "block_number": "142",
+//         "street_name": "Jurong West Central 1",
+//         "unit_number": "12-345",
+//         "postal_code": 650142
+//     },
+//     "request_submitted_date": "15/10/2014",
+//     "sent_to_agent": true,
+//     "new_admin_message": true
+// }
 
 ];
 
@@ -64,8 +64,9 @@ var service_report_134 = {
     "service_report_generated_date": "15/10/2014",
     "request_generated_date": "15/10/2014",
     "service_manager": null,
+    "new_admin_message": false,
     "address": {
-        "name": "Rivervale",
+        "name": "Parc Oasis",
         "block_number": "142",
         "street_name": "Bukit Batok",
         "unit_number": "12-03",
@@ -2027,7 +2028,7 @@ var listing = function(id){
   var listings = {results :
     [
 
-        {"number_of_bedroom":3,"number_of_bathroom":2,"name":"Rivervale","block_number":"142","street_name":"Bukit Batok","unit_number":"12-03","square_feet":123,"id":292}
+        {"number_of_bedroom":3,"number_of_bathroom":2,"name":"Parc Oasis","block_number":"142","street_name":"Bukit Batok","unit_number":"12-03","square_feet":123,"id":292}
 
     ]};
 
@@ -2078,6 +2079,44 @@ var getServiceReports = function(request,reply){
 
 }
 
+var messageServiceReport = [
+            
+            {
+                "user": {
+                    "id": 111,
+                    "username": "deepan@afteryou.co"
+                    
+                },
+                "creation_date": "2014/11/03 13:00:12",
+                "id": 5,
+                "content": "The standard tap cost $80 including installation. We are able to render the service by tomorrow"
+            },
+            {
+                "user": {
+                    "id": 123,
+                    "username": "sebastian@afteryou.co"
+                    
+                },
+                "creation_date": "2014/11/03 12:00:12",
+                "id": 11,
+                "content": "Hi, I want to know what are the cost for changing a tap in the kitchen? And when can you come down to fix?"
+            }
+    ]
+
+var getMessageServiceReport = function(request,reply){
+    try{
+        //service report 134
+        var service_report = _.find(service_reports,{id:134}) 
+        service_report.new_admin_message = false;
+        service_report_134.new_admin_message = false;
+        console.log("set new admin message to false")
+    }catch(e){
+
+    }
+    reply(messageServiceReport);
+
+}
+
 var getServiceReport = function(request,reply){
 
   var id =  encodeURIComponent(request.params.id);
@@ -2089,8 +2128,9 @@ var service_report_133 = {
     "service_report_generated_date": null,
     "request_generated_date": "15/10/2014",
     "service_manager": null,
+    "new_admin_message": false,
     "address": {
-        "name": "Rivervale",
+        "name": "Parc Oasis",
         "block_number": "142",
         "street_name": "Bukit Batok",
         "unit_number": "12-03",
@@ -2283,8 +2323,9 @@ var service_report_135 = {
     "service_report_generated_date": "16/10/2014",
     "request_generated_date": "15/10/2014",
     "service_manager": null,
+    "new_admin_message": true,
     "address": {
-        "name": "Rivervale",
+        "name": "Parc Oasis",
         "block_number": "142",
         "street_name": "Bukit Batok",
         "unit_number": "12-03",
@@ -2386,7 +2427,7 @@ var login = function(request,reply){
   var payload = request.payload;
   logRequest(request,'login');
   if(payload.username === 'sebastian@afteryou.co' && payload.password === 'password'){
-    reply({full_name:"sebastian lee",token:"083f1b280baad0f1cd0b53dc759d433de0a687ectest"})
+    reply({user_id: 123,full_name:"sebastian lee",token:"083f1b280baad0f1cd0b53dc759d433de0a687ectest"})
   }else{
     var error = Hapi.error.badRequest('Invalid Credential');
 
@@ -2409,14 +2450,15 @@ var postRequest = function(request,reply){
         "number_of_submission": 0,
         "latest": false,
         "address": {
-            "name": "Rivervale",
+            "name": "Parc Oasis",
             "block_number": "142",
             "street_name": "Bukit Batok",
             "unit_number": "12-03",
             "postal_code": 650142
         },
         "request_submitted_date": "15/10/2014",
-        "sent_to_agent": false
+        "sent_to_agent": false,
+        "new_admin_message": false
     });
 
     reply({id : 134});
@@ -2428,19 +2470,20 @@ var postRequest = function(request,reply){
         "number_of_submission": 0,
         "latest": false,
         "address": {
-            "name": "Rivervale",
+            "name": "Parc Oasis",
             "block_number": "142",
             "street_name": "Bukit Batok",
             "unit_number": "12-03",
             "postal_code": 650142
         },
         "request_submitted_date": "15/10/2014",
-        "sent_to_agent": false
+        "sent_to_agent": false,
+        "new_admin_message": false
     });
 
     setTimeout(function(){
 
-    var service_report = _.find(service_reports,{id:134}) || _.find(service_reports,{id:132});;
+    var service_report = _.find(service_reports,{id:134}) || _.find(service_reports,{id:132});
       service_report.latest = true;
       service_report.sent_to_agent = true;
 
@@ -2497,18 +2540,11 @@ var putServiceReport = function(request,reply){
 
   }
 
-
-
-
-
-
-
 }
 
 var postToken = function(request,reply){
   reply(request.payload);
   logRequest(request,'Token');
-
 
 }
 
@@ -2517,14 +2553,12 @@ var postDebug = function(request,reply){
   reply("GOOD");
   logRequest(request, "DEBUG");
 
-
 }
 
 var postFeedback = function(request,reply){
 
   reply("GOOD");
   logRequest(request, "Feedback");
-
 
 }
 
@@ -2533,14 +2567,57 @@ var postChangePassword = function(request,reply){
   reply("GOOD");
   logRequest(request, "New Password");
 
-
 }
 
 
 var postSRmail = function(request,reply){
-
   reply("GOOD");
   logRequest(request, "Mail SR");
+}
+
+var postMessageServiceReport = function(request,reply){
+  
+    var message = {
+                "user": {
+                    "id": 123,
+                    "username": "sebastian@afteryou.co"
+                    
+                },
+                "creation_date": "2014/11/04 13:00:12",
+                "id": 5,
+                "content": request.payload.content
+            }
+    reply(message);
+  setTimeout(function(){
+    messageServiceReport.unshift(message)
+    messageServiceReport.unshift(
+             {
+                "user": {
+                    "id": 111,
+                    "username": "deepan@afteryou.co"
+                    
+                },
+                "creation_date": "2014/11/04 13:00:12",
+                "id": 6,
+                "content": "Sure. Your service report will be updated shortly. Have a nice day"
+            }
+
+        )
+    try{
+        //service report 134
+
+        var service_report = _.find(service_reports,{id:134}) 
+        service_report.new_admin_message = true;
+        service_report_134.new_admin_message = true;
+    }catch(e){
+
+    }
+
+    console.log("Setting messaging and new admin message to true")
+
+  }, 3000);
+  
+  logRequest(request, "Messages Service Report");
 
 
 }
@@ -2556,6 +2633,8 @@ getPath("/agent_app/template/services/{id?}",getServices);
 getPath("/agent_app/listing",getListing);
 getPath("/agent_app/service_report",getServiceReports);
 getPath("/agent_app/service_report/{id}",getServiceReport);
+getPath("/agent_app/messages/ServiceReport/{id}",getMessageServiceReport);
+
 
 postPath("/login",login);
 postPath("/agent_app/listing",postListing);
@@ -2565,8 +2644,10 @@ postPath("/agent_app/notification_token",postToken);
 postPath("/agent_app/feedback",postFeedback);
 postPath("/change_password",postChangePassword);
 postPath("/agent_app/service_report/send_mail",postSRmail);
-
+postPath("/agent_app/messages/ServiceReport/{id}",postMessageServiceReport);
 postPath("/agent_app/debug",postDebug);
+
+
 
 putPath("/agent_app/service_report/{id}",putServiceReport);
 
