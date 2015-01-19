@@ -1,12 +1,11 @@
 /*global require, console */
 (function () {
     'use strict';
-    var Hapi, Good, gulp, _request, _, prettyjson,
+    var Hapi, Good, _request, _, prettyjson,
       server, getPath, postPath, putPath,
       getListings, logRequest;
     Hapi = require('hapi');
     Good = require('good');
-    gulp = require('gulp');
     _request = require('request');
     _ = require('lodash');
     prettyjson = require('prettyjson');
