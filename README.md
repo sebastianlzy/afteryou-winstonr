@@ -1,1 +1,1 @@
-A documentation server for Winston
+A documentation server for Winstonr
